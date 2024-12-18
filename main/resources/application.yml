@@ -1,0 +1,42 @@
+server:
+  port: 8082
+  
+#Enable management endpoints  
+#Standrad configuration for actuator
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+    
+resilience4j:
+  circuitbreaker:
+    instances:
+      serviceA:
+        
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        # threshold %age
+        failureRateThreshold: 50 # 50% failure rate will trigger the circuit breaker
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 5s 				# Time in milliseconds the circuit breaker stays open before entering half-open state
+        permittedNumberOfCallsInHalfOpenState: 3 				# Number of requests allowed in half-open state to test if service is OK
+        slidingWindowSize: 10 # Sliding window size for determining failure rate
+        slidingWindowType: COUNT_BASED
+        
+  retry:
+    instances:
+      serviceA:
+        registerHealthIndicator: true
+        max-attempts: 5
+        wait-duration: 1000ms
+          
+        
+            
